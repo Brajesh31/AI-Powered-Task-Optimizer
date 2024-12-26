@@ -1,0 +1,118 @@
+{
+    "E001": [
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-23 18:53:31"
+        },
+        {
+            "mood": "neutral",
+            "timestamp": "2024-12-23 18:53:31"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-23 18:53:31"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 16:35:24"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 16:35:24"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 16:35:24"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 16:36:28"
+        },
+        {
+            "mood": "neutral",
+            "timestamp": "2024-12-25 16:36:28"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 16:36:28"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 17:47:56"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 17:47:56"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 17:47:56"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 17:48:15"
+        },
+        {
+            "mood": "neutral",
+            "timestamp": "2024-12-25 17:48:15"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-25 17:48:15"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-26 09:49:57"
+        },
+        {
+            "mood": "neutral",
+            "timestamp": "2024-12-26 09:49:57"
+        },
+        {
+            "mood": "stressed",
+            "timestamp": "2024-12-26 09:49:57"
+        }
+    ],
+    "E002": [
+        {
+            "mood": "sad",
+            "timestamp": "2024-12-23 18:53:31"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-23 18:53:31"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 16:35:24"
+        },
+        {
+            "mood": "sad",
+            "timestamp": "2024-12-25 16:36:28"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 16:36:28"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 17:47:56"
+        },
+        {
+            "mood": "sad",
+            "timestamp": "2024-12-25 17:48:15"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-25 17:48:15"
+        },
+        {
+            "mood": "sad",
+            "timestamp": "2024-12-26 09:49:57"
+        },
+        {
+            "mood": "happy",
+            "timestamp": "2024-12-26 09:49:57"
+        }
+    ]
+}
