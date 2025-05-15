@@ -1,5 +1,5 @@
-# pip install -r requirements.txt
-
+# Modern dependencies for AI-Powered Task Optimizer
+rich==13.3.1
 audioread==3.0.1
 certifi==2024.12.14
 cffi==1.17.1

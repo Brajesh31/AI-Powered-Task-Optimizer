@@ -5,199 +5,190 @@ import torch
 from transformers import pipeline
 import sounddevice as sd
 import matplotlib.pyplot as plt
-import random
-import time
+from datetime import datetime
 import atexit
 import sys
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress
+from rich import print as rprint
+from pathlib import Path
 
-# ===== TEXT ANALYSIS =====
-# Specify the model name and revision
-model_name = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
-revision = "714eb0f"
+console = Console()
 
-# Initialize the pipeline with the specified model and revision
-text_analyzer = pipeline("sentiment-analysis", model=model_name, revision=revision)
-
-def analyze_text_emotion(text):
-    """
-    Analyze the emotion from the given text.
-    """
-    result = text_analyzer(text)
-    return result[0]['label'], result[0]['score']
-
-# ===== FACIAL EXPRESSION ANALYSIS =====
-# Load a pre-trained Haar Cascade for face detection
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
-def analyze_facial_expression(frame):
-    """
-    Analyze facial expressions using pre-trained emotion detection.
-    """
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
-    emotions = ["Neutral", "Happy", "Sad", "Angry", "Surprised"]  # Simplified emotion list
-
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-        emotion = np.random.choice(emotions)  # Replace with model prediction
-        cv2.putText(frame, emotion, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
-        return emotion
-    return "No Face Detected"
-
-# ===== SPEECH EMOTION DETECTION =====
-def analyze_speech_emotion(duration=3, sampling_rate=16000):
-    """
-    Analyze speech emotion from microphone input.
-    """
-    print("Recording... Speak now!")
-    audio = sd.rec(int(duration * sampling_rate), samplerate=sampling_rate, channels=1, dtype='float32')
-    sd.wait()
-    print("Recording complete!")
-
-    # Extract features for emotion detection
-    mfccs = librosa.feature.mfcc(y=audio.flatten(), sr=sampling_rate, n_mfcc=40)
-
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(mfccs, x_axis='time')
-    plt.colorbar()
-    plt.title('MFCC')
-    plt.tight_layout()
-    plt.show()
-
-    emotion = np.random.choice(["Neutral", "Happy", "Sad", "Angry", "Fearful"])
-    return emotion
-
-# ===== TASK RECOMMENDATIONS =====
-# Predefined tasks categorized by mood
-task_recommendations = {
-    "happy": [
-        "Lead a brainstorming session",
-        "Collaborate on a creative project",
-        "Mentor a colleague",
-        "Work on a challenging task that excites you"
-    ],
-    "sad": [
-        "Take a short break and relax",
-        "Focus on light, repetitive tasks like organizing emails",
-        "Review previously completed tasks for confidence",
-        "Engage in mindfulness activities or journaling"
-    ],
-    "angry": [
-        "Step away for a moment and practice deep breathing",
-        "Engage in physical tasks like organizing the workspace",
-        "Work on analytical tasks that require focus",
-        "Draft notes or outlines for future projects"
-    ],
-    "neutral": [
-        "Continue working on your scheduled tasks",
-        "Review and update project documentation",
-        "Learn a new skill or explore training modules",
-        "Check in with colleagues or team members"
-    ],
-    "stressed": [
-        "Prioritize tasks and focus on the most critical ones",
-        "Delegate tasks if possible",
-        "Attend a stress management workshop or session",
-        "Take regular breaks during the workday"
-    ],
-    "excited": [
-        "Start a high-priority project",
-        "Take on leadership roles for team activities",
-        "Share your ideas with the team in a meeting",
-        "Work on innovative or creative assignments"
-    ]
+# Modern UI Configuration
+UI_CONFIG = {
+    "theme": {
+        "primary": "#6366F1",
+        "secondary": "#4F46E5",
+        "success": "#22C55E",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "background": "#1F2937",
+        "text": "#F3F4F6"
+    }
 }
 
-def recommend_task(emotion):
-    if emotion.lower() in task_recommendations:
-        tasks = task_recommendations[emotion.lower()]
-        return random.choice(tasks)
-    else:
-        return "Emotion not recognized. Please ensure the emotion is valid."
+class EmotionAnalyzer:
+    def __init__(self):
+        self.text_analyzer = pipeline(
+            "sentiment-analysis",
+            model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+            revision="714eb0f"
+        )
+        self.face_cascade = cv2.CascadeClassifier(
+            cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+        )
+        
+    def analyze_text(self, text: str) -> tuple:
+        """Analyze text emotion with modern error handling."""
+        try:
+            result = self.text_analyzer(text)
+            return result[0]['label'], result[0]['score']
+        except Exception as e:
+            console.print(f"[red]Error analyzing text: {e}[/red]")
+            return "NEUTRAL", 0.0
 
-# ===== REAL-TIME SYSTEM INTEGRATION =====
-def real_time_emotion_detection():
-    """
-    Real-time emotion detection system with a 60-second limit.
-    """
-    print("Launching Real-Time Emotion Detection...")
-    cap = cv2.VideoCapture(0)
-    start_time = time.time()
-    detected_emotions = []
+    def analyze_face(self, frame: np.ndarray) -> str:
+        """Modern facial expression analysis."""
+        try:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
+            
+            if len(faces) == 0:
+                return "No Face Detected"
+            
+            emotions = ["Neutral", "Happy", "Sad", "Angry", "Surprised"]
+            for (x, y, w, h) in faces:
+                # Modern UI elements
+                cv2.rectangle(frame, (x, y), (x+w, y+h), 
+                            hex_to_bgr(UI_CONFIG["theme"]["primary"]), 2)
+                emotion = np.random.choice(emotions)
+                cv2.putText(frame, emotion, (x, y-10),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                           hex_to_bgr(UI_CONFIG["theme"]["text"]), 2)
+                return emotion
+        except Exception as e:
+            console.print(f"[red]Error in facial analysis: {e}[/red]")
+            return "Error"
 
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
+class TaskRecommender:
+    def __init__(self):
+        self.recommendations = {
+            "happy": [
+                "📊 Lead an innovative brainstorming session",
+                "🎨 Work on a creative design project",
+                "👥 Mentor team members",
+                "🚀 Tackle challenging tasks"
+            ],
+            "sad": [
+                "🧘‍♂️ Take a mindful break",
+                "📧 Organize inbox",
+                "✅ Review accomplishments",
+                "📝 Practice journaling"
+            ],
+            "angry": [
+                "🌬️ Practice deep breathing exercises",
+                "🗂️ Organize workspace",
+                "📊 Focus on data analysis",
+                "📋 Create project outlines"
+            ],
+            "neutral": [
+                "📅 Continue scheduled tasks",
+                "📚 Update documentation",
+                "🎯 Learn new skills",
+                "👥 Connect with team members"
+            ],
+            "stressed": [
+                "📋 Prioritize tasks",
+                "👥 Delegate responsibilities",
+                "🧘‍♂️ Join stress management session",
+                "⏰ Take scheduled breaks"
+            ]
+        }
 
-            # Facial Expression Analysis
-            emotion_face = analyze_facial_expression(frame)
-            if emotion_face != "No Face Detected":
-                detected_emotions.append(emotion_face)
+    def get_recommendation(self, emotion: str) -> str:
+        """Get modern task recommendations."""
+        emotion = emotion.lower()
+        if emotion in self.recommendations:
+            tasks = self.recommendations[emotion]
+            return np.random.choice(tasks)
+        return "🤔 Emotion not recognized. Please try again."
 
-            # Display live video with facial emotion overlay
-            cv2.imshow("Emotion Detection", frame)
+def hex_to_bgr(hex_color: str) -> tuple:
+    """Convert hex color to BGR."""
+    hex_color = hex_color.lstrip('#')
+    rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    return rgb[::-1]
 
-            # Stop after 60 seconds
-            if time.time() - start_time > 60:
-                break
+class EmotionDetectionSystem:
+    def __init__(self):
+        self.analyzer = EmotionAnalyzer()
+        self.recommender = TaskRecommender()
+        
+    def run(self):
+        """Run the modern emotion detection system."""
+        console.print(Panel.fit(
+            "[bold blue]AI-Powered Task Optimizer[/bold blue]\n"
+            "Modern Emotion Detection System",
+            border_style="blue"
+        ))
 
-            # Keyboard interrupt to quit
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        with Progress() as progress:
+            task1 = progress.add_task("[cyan]Initializing camera...", total=100)
+            cap = cv2.VideoCapture(0)
+            progress.update(task1, advance=100)
 
-        cap.release()
-        cv2.destroyAllWindows()
+            start_time = datetime.now()
+            detected_emotions = []
 
-        # Determine most frequent emotion from detected emotions
-        if detected_emotions:
-            final_facial_emotion = max(set(detected_emotions), key=detected_emotions.count)
-        else:
-            final_facial_emotion = "No Face Detected"
+            try:
+                while (datetime.now() - start_time).seconds < 60:
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
 
-        # Text Analysis
-        text_input = input("Enter text to analyze emotion: ")
-        emotion_text, confidence_text = analyze_text_emotion(text_input)
-        print(f"Text Emotion: {emotion_text} (Confidence: {confidence_text:.2f})")
+                    emotion_face = self.analyzer.analyze_face(frame)
+                    if emotion_face != "No Face Detected":
+                        detected_emotions.append(emotion_face)
 
-        # Speech Analysis
-        emotion_speech = analyze_speech_emotion()
-        print(f"Speech Emotion: {emotion_speech}")
+                    # Modern UI window
+                    cv2.imshow("Modern Emotion Detection", frame)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
 
-        # Task Recommendation
-        detected_emotion = emotion_text.lower()  # Using text emotion for task recommendation
-        recommended_task = recommend_task(detected_emotion)
+            finally:
+                cap.release()
+                cv2.destroyAllWindows()
 
-        print(f"\nFinal Emotion Analysis Results:")
-        print(f"Facial Expression: {final_facial_emotion}")
-        print(f"Text Analysis: {emotion_text}")
-        print(f"Speech Emotion: {emotion_speech}")
-        print(f"Recommended Task: {recommended_task}")
+            # Modern results display
+            console.print("\n[bold green]Analysis Results[/bold green]")
+            
+            text_input = console.input("[cyan]Enter text to analyze: [/cyan]")
+            emotion_text, confidence = self.analyzer.analyze_text(text_input)
+            
+            results = {
+                "Facial Expression": max(set(detected_emotions), key=detected_emotions.count) if detected_emotions else "No Face Detected",
+                "Text Emotion": f"{emotion_text} (Confidence: {confidence:.2f})",
+                "Recommended Task": self.recommender.get_recommendation(emotion_text)
+            }
 
-    except Exception as e:
-        print(f"Error occurred: {e}")
-    finally:
-        cleanup()
+            for key, value in results.items():
+                console.print(f"[yellow]{key}:[/yellow] {value}")
 
 def cleanup():
-    """
-    Cleanup function to be called on exit.
-    """
-    print("Cleaning up resources...")
-    # Add any resource cleanup code here
+    """Modern cleanup function."""
+    console.print("[red]Cleaning up resources...[/red]")
     cv2.destroyAllWindows()
     sd.stop()
 
-# Register the cleanup function to be called on exit
-atexit.register(cleanup)
-
-# ===== MAIN PROGRAM =====
 if __name__ == "__main__":
+    atexit.register(cleanup)
     try:
-        real_time_emotion_detection()
+        system = EmotionDetectionSystem()
+        system.run()
     except Exception as e:
-        print(f"An error occurred: {e}")
+        console.print(f"[red]An error occurred: {e}[/red]")
         sys.exit(1)
     finally:
         cleanup()
