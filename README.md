@@ -1,115 +1,58 @@
 # AI-Powered Task Optimizer
 
-### Overview
-The AI-Powered Task Optimizer is an intelligent system designed to enhance workplace productivity and employee well-being by analyzing emotions through text, speech, and facial expressions. Using machine learning and data science techniques, the system provides real-time emotion detection, personalized task recommendations, and stress management insights, fostering a healthier and more empathetic work environment.
+AI-Powered Task Optimizer is a Python prototype for emotion-aware productivity experiments. It combines text sentiment analysis, OpenCV face detection, microphone-related dependencies, task recommendations, and JSON mood history. Supporting scripts generate historical and team-level mood charts.
 
-### Key Features
-1. **Real-Time Emotion Detection**
+## Important safety and privacy notice
 
-Analyzes text, live video (facial expressions), and speech signals to detect        emotions accurately.
+This is an educational prototype, not a medical, employment, psychological, or performance-evaluation system. Emotion inference is probabilistic and can be inaccurate or biased. Do not use it to make decisions about hiring, discipline, promotion, health, or access to services. Obtain consent, minimize collection, and use synthetic or de-identified data.
 
-2. **Task Recommendations**
+## Repository contents
 
-Suggests tasks aligned with the detected emotional state to improve productivity and satisfaction.
+- `main.py` - interactive camera, text sentiment, and task recommendation flow.
+- `Historical Mood Tracking.py` - records and summarizes sample employee moods.
+- `Team Mood Analytics.py` - aggregates `mood_tracking.json` and writes `team_mood_trends.png`.
+- `Data Privacy Anonymization.py` - anonymization experiment.
+- `Stress Management.py` - stress-related analysis experiment.
+- `requirements.txt` - Python dependencies.
+- `package.json` - legacy Node.js dependency metadata; no `index.js` is currently present.
+- `mood_tracking.json`, `anonymized_data.csv`, and image/PDF/PPTX files - sample outputs or project artifacts.
 
-3. **Historical Mood Tracking**
+## Setup
 
-Maintains mood trends over time for individual employees to identify patterns and insights.
+Use Python 3.10 or a compatible supported version:
 
-4. **Stress Management and Alerts**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python main.py
+```
 
-Flags prolonged stress or disengagement and notifies HR or managers for timely interventions.
+The main flow may require a working webcam, microphone permissions, graphical display, and model downloads. Press `q` to stop camera capture. The first Transformers run may download the pinned sentiment model.
 
-5. **Team Mood Analytics**
+## Mood tracking
 
-Aggregates mood data across teams to monitor morale and productivity trends.
+`Historical Mood Tracking.py` writes timestamps and moods to `mood_tracking.json`. Run it from the repository root:
 
-6. **Data Privacy and Security**
+```powershell
+python "Historical Mood Tracking.py"
+python "Team Mood Analytics.py"
+```
 
-Ensures sensitive data is anonymized and stored securely, complying with privacy regulations.
+The analytics script currently contains a machine-specific absolute path and should be updated to use a repository-relative path before portable use.
 
-## System Workflow
-1. **Data Collection**
+## Development
 
-Text inputs, live video for facial emotion recognition, and speech recordings for tone analysis.
+Keep data collection opt-in and avoid storing raw camera frames, audio, text, or identifiable employee information. Add tests for unavailable devices, missing model files, empty mood data, unknown emotions, malformed JSON, and cleanup on interruption.
 
-2. **Emotion Detection**
+Run syntax checks with:
 
-Uses NLP, computer vision, and audio signal processing for comprehensive emotion detection.
+```powershell
+python -m compileall .
+```
 
-3. **Task Matching**
+See [docs/architecture.md](docs/architecture.md), [docs/development.md](docs/development.md), and [docs/security.md](docs/security.md).
 
-Maps detected emotions to predefined task recommendations.
+## Ownership
 
-4. **Insights and Alerts**
-
-Generates reports and sends alerts for prolonged stress or team morale trends.
-
-### Installation
-**Prerequisites**
-
-Python 3.10
-
-**Libraries:**
-
-* transformers
-* opencv-python
-* librosa
-* numpy
-* matplotlib
-* sounddevice
-
-### Steps:
-1. **Clone the repository:**
-*git clone https://github.com/iamakashjha/AI-Powered-Task-Optimizer* 
-
-2. **Install dependencies:**
-*pip install -r requirements.txt*
-
-3. **Run the application:**
-*python main.py*
-
-## Usage
-### Real-Time Emotion Detection:
-* Launch the application.
-* The system will use your webcam for facial emotion detection.
-* Enter text inputs for analysis or speak into the microphone for speech emotion detection.
-* The system will display detected emotions and recommend tasks.
-
-
-### Task Recommendations:
-**Based on detected emotions:**
-* Happy: Collaborative or creative tasks.
-* Sad: Light or repetitive tasks.
-* Stressed: Mindfulness activities or task prioritization.
-* Neutral: Scheduled tasks or skill development.
-
-### Stress Management
-* Notifications will be sent to HR or managers if prolonged stress or disengagement is detected.
-
-## Example Output
-### Emotion Detection Results:
-
-* Facial Expression: Happy
-* Text Emotion: Positive (Confidence: 95%)
-* Speech Emotion: Neutral
-
-### Task Recommendation:
-
-* Lead a brainstorming session with the team.
-
-## Acknowledgments
-
-* Hugging Face for the NLP models.
-* OpenCV for computer vision capabilities.
-* Librosa for speech emotion analysis.
-
-
-# Contact
-
-For questions or support, please reach out to me:
-
-Email: iamakashjha@icloud.com
-
-GitHub: https://github.com/iamakashjha/
-
+Maintained by Brajesh Kumar (`brajesh31`).
